@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gunung Pancar Camp — Management System</title>
+<style>
+:root{
+  --bg:#071714; --panel:#0d211c; --panel2:#102a23; --line:#1e4036;
+  --green:#36d67a; --green2:#8be6ae; --gold:#e7b75b; --red:#ff6b68;
+  --text:#eef8f2; --muted:#8da99e; --sidebar:248px;
+}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 80% 0%,#174536 0,#071714 35%,#050f0d 100%);color:var(--text);font:14px Inter,Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit} button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);position:fixed;inset:0 auto 0 0;background:rgba(5,18,15,.94);border-right:1px solid var(--line);padding:22px 15px;z-index:5;display:flex;flex-direction:column;overflow-y:auto}
+.brand{display:flex;gap:12px;align-items:center;padding:8px 10px 24px}.brand-mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#45dc82,#0d5a42);display:grid;place-items:center;font-size:23px;box-shadow:0 8px 25px #1fb66c33}.brand b{font-size:15px}.brand small{display:block;color:var(--muted);margin-top:3px}
+.nav-title{font-size:10px;color:#58776b;letter-spacing:1.3px;margin:18px 11px 7px;text-transform:uppercase}.nav button{width:100%;border:0;background:transparent;color:#9db7ad;text-align:left;padding:11px 12px;border-radius:11px;margin:2px 0;display:flex;align-items:center;gap:11px}.nav button:hover,.nav button.active{background:linear-gradient(90deg,#173e31,#123126);color:#fff}.nav button.active{box-shadow:inset 3px 0 var(--green)}.ico{width:22px;text-align:center;font-size:17px}.side-bottom{margin-top:auto;padding-bottom:10px;border-top:1px solid var(--line);padding-top:15px;color:var(--muted)}.user{display:flex;gap:10px;align-items:center}.avatar{width:34px;height:34px;border-radius:50%;background:#d8aa4e;color:#172119;display:grid;place-items:center;font-weight:800}
+.main{margin-left:var(--sidebar);width:calc(100% - var(--sidebar));padding:24px 28px 38px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.title h1{font-size:24px;margin:0}.title p{margin:5px 0 0;color:var(--muted)}.actions{display:flex;gap:9px}.search{background:#0c241e;border:1px solid var(--line);border-radius:11px;padding:10px 13px;color:#9ab5ab;min-width:220px}.btn{border:1px solid var(--line);background:#0d241e;color:#dff6e9;border-radius:10px;padding:10px 14px}.btn.primary{background:#1b8d59;border-color:#2bbf77;color:white}.btn.warn{background:#3d3218;color:#f5ce70;border-color:#69511c}
+.page{display:none}.page.active{display:block}
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;padding:24px;background:linear-gradient(120deg,#123c2eaa,#0a211bb8),radial-gradient(circle at 80% 20%,#297050,#092019 60%);min-height:165px}.hero:after{content:"";position:absolute;right:-80px;bottom:-120px;width:430px;height:260px;background:linear-gradient(140deg,transparent,#2c8a5d22);transform:skewX(-30deg)}.hero h2{margin:0;font-size:28px}.hero p{color:#b0c9bf;max-width:650px;line-height:1.6}.hero .badge{display:inline-block;padding:6px 10px;border-radius:20px;background:#2b865a44;color:#8ef0b5;border:1px solid #3aa87366;font-size:12px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin:16px 0}.card{background:linear-gradient(145deg,#102820,#0b1d18);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 10px 30px #00000018}.stat{display:flex;justify-content:space-between;align-items:flex-start}.stat .label{color:var(--muted);font-size:12px}.num{font-size:26px;font-weight:800;margin-top:9px}.trend{font-size:11px;color:#73e7a1;margin-top:6px}.stat-icon{width:38px;height:38px;border-radius:11px;background:#174434;display:grid;place-items:center;font-size:18px}
+.grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.panel{background:rgba(10,29,24,.9);border:1px solid var(--line);border-radius:17px;padding:17px;overflow-x:auto}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.panel h3{font-size:15px;margin:0}.muted{color:var(--muted)}.chart{height:210px;display:flex;align-items:end;gap:12px;padding:20px 8px 0}.bar{flex:1;background:linear-gradient(#38d27a,#14533d);border-radius:7px 7px 2px 2px;min-height:20px;position:relative}.bar span{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted)}.bar em{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-style:normal;font-size:10px;color:#b7d6c8}
+.activity{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #18372e}.activity:last-child{border-bottom:0}.dot{width:9px;height:9px;border-radius:50%;background:var(--green);margin-top:5px}.activity b{font-size:12px}.activity p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:12px 10px;border-bottom:1px solid #19382f}.table th{color:#719086;font-size:11px;text-transform:uppercase}.table td{font-size:12px}.pill{display:inline-block;border-radius:20px;padding:5px 8px;font-size:10px}.online{background:#173f2e;color:#79e8a4}.warning{background:#423617;color:#efc55e}.offline{background:#421e1f;color:#ff8582}
+.map{height:330px;border-radius:13px;position:relative;overflow:hidden;background:radial-gradient(circle at 30% 30%,#1b5c3e,#0c3024 45%,#071a14);border:1px solid #285344}.map:before{content:"";position:absolute;inset:0;background-image:linear-gradient(28deg,transparent 48%,#6aa8792b 49%,transparent 50%),linear-gradient(150deg,transparent 47%,#6aa87922 48%,transparent 49%);background-size:95px 70px}.pin{position:absolute;background:#173e31;border:1px solid #57c789;padding:7px 9px;border-radius:9px;font-size:10px;box-shadow:0 8px 18px #0005}.pin i{color:#7be6a6;font-style:normal}.camera-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.cam{height:125px;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(140deg,#315e46,#122a21 55%,#071510)}.cam:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 50%,#0008)}.cam b{position:absolute;left:10px;bottom:9px;font-size:11px}.live{position:absolute;right:8px;top:8px;background:#19704a;padding:4px 7px;border-radius:10px;font-size:9px}.ringrow{display:flex;justify-content:space-around;text-align:center}.ring{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;margin:auto;background:conic-gradient(var(--green) 0 78%,#193a31 78%);position:relative}.ring:after{content:"";position:absolute;inset:7px;border-radius:50%;background:#0c211b}.ring b{position:relative;z-index:1}.module-head{display:flex;justify-content:space-between;align-items:center;margin:4px 0 16px}.module-head h2{margin:0}.toolbar{display:flex;gap:8px}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.input{background:#0a1c17;border:1px solid #23463b;color:#dceee5;padding:10px;border-radius:9px;outline:0}.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.empty{padding:30px;text-align:center;color:var(--muted)}
+.footer{margin-top:18px;color:#5f7e72;font-size:11px;text-align:center}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}.sidebar{width:210px}.main{margin-left:210px;width:calc(100% - 210px)}}
+@media(max-width:760px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:15px}.nav{display:grid;grid-template-columns:repeat(2,1fr)}.side-bottom{position:static}.cards,.grid3,.kpi{grid-template-columns:1fr 1fr}.form{grid-template-columns:1fr}.top{align-items:flex-start;gap:10px}.search{min-width:120px}}
+</style>
+
+<style id="modern-upgrade">
+:root{
+ --bg:#06110f;--bg2:#091b16;--surface:rgba(15,34,28,.72);--surface2:rgba(18,43,35,.82);
+ --line:rgba(130,190,160,.14);--line2:rgba(130,190,160,.24);
+ --text:#f2fbf6;--muted:#8faea1;--green:#49e58a;--green2:#21b96b;
+ --gold:#f2c35d;--red:#ff6868;--blue:#62c8ff;--shadow:0 24px 60px rgba(0,0,0,.28);
+}
+*{scrollbar-width:thin;scrollbar-color:#275844 transparent}
+body{
+ background:
+ radial-gradient(900px 500px at 72% -8%,rgba(43,133,91,.25),transparent 65%),
+ radial-gradient(700px 500px at 10% 40%,rgba(24,92,68,.18),transparent 70%),
+ linear-gradient(135deg,#04100d,#071914 55%,#06110f);
+}
+body:before{
+ content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;
+ background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+ background-size:40px 40px;mask-image:linear-gradient(to bottom,black,transparent 85%);z-index:-1
+}
+.sidebar{
+ width:256px;background:linear-gradient(180deg,rgba(4,20,16,.96),rgba(4,15,12,.92));
+ border-right:1px solid var(--line);backdrop-filter:blur(22px);padding:18px 13px
+}
+.brand{padding:8px 12px 26px}.brand-mark{
+ width:48px;height:48px;border-radius:16px;
+ background:linear-gradient(145deg,#55ed98,#126244);box-shadow:0 10px 30px rgba(55,218,132,.22);
+}
+.brand b{letter-spacing:.6px;font-size:14px}.brand small{color:#77998b}
+.nav-title{margin:19px 11px 8px;color:#54776a;font-weight:700}
+.nav button{color:#91aca2;padding:12px 13px;border:1px solid transparent;transition:.2s}
+.nav button:hover{background:rgba(57,139,98,.10);border-color:var(--line);transform:translateX(2px)}
+.nav button.active{
+ color:#fff;background:linear-gradient(90deg,rgba(50,177,107,.22),rgba(50,177,107,.05));
+ border-color:rgba(72,218,139,.18);box-shadow:inset 3px 0 var(--green),0 10px 28px rgba(0,0,0,.12)
+}
+.ico{font-size:16px}
+.main{padding:24px 30px 45px;max-width:1700px}
+.top{margin-bottom:24px}.title h1{font-size:26px;letter-spacing:-.5px}.title p{color:#78988b}
+.actions{gap:8px}.search{
+ min-width:250px;background:rgba(12,31,25,.72);border:1px solid var(--line2);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.03);backdrop-filter:blur(14px)
+}
+.btn{border-color:var(--line2);background:rgba(12,34,27,.75);transition:.2s}
+.btn:hover{transform:translateY(-1px);border-color:#3d8065;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.btn.primary{background:linear-gradient(135deg,#2bbf76,#16834e);border-color:#49d98c;box-shadow:0 8px 22px rgba(31,184,106,.18)}
+.hero{
+ min-height:205px;border-radius:24px;padding:29px;
+ background:
+ linear-gradient(90deg,rgba(5,27,21,.96) 0%,rgba(6,31,24,.76) 55%,rgba(6,26,21,.34)),
+ radial-gradient(circle at 82% 25%,#39795b,transparent 38%),
+ linear-gradient(135deg,#123b2c,#071c16);
+ border:1px solid var(--line2);box-shadow:var(--shadow);overflow:hidden
+}
+.hero:before{
+ content:"⛰";position:absolute;right:45px;top:16px;font-size:170px;line-height:1;
+ color:rgba(100,210,151,.08);transform:rotate(-8deg)
+}
+.hero h2{font-size:31px;letter-spacing:-1px;position:relative}.hero p{font-size:13px;max-width:720px}
+.hero .badge{background:rgba(47,202,119,.11);border-color:rgba(72,218,139,.25)}
+.cards{gap:14px;margin:18px 0}
+.card,.panel{
+ background:linear-gradient(145deg,rgba(18,43,35,.86),rgba(8,25,20,.82));
+ border:1px solid var(--line);box-shadow:0 16px 45px rgba(0,0,0,.16);backdrop-filter:blur(14px)
+}
+.card{border-radius:17px}.card:hover{border-color:rgba(83,220,143,.22)}
+.stat .label{font-size:11px;text-transform:uppercase;letter-spacing:.7px}.num{font-size:27px}
+.stat-icon{background:linear-gradient(145deg,#174b36,#102d23);border:1px solid rgba(88,220,145,.12)}
+.grid2,.grid3{gap:16px}.panel{border-radius:19px;padding:19px}.panel h3{font-size:14px}
+.panel-head{margin-bottom:15px}.chart{height:225px}
+.bar{background:linear-gradient(180deg,#50e994,#176443);box-shadow:0 8px 20px rgba(39,207,119,.12)}
+.map{
+ height:360px;background:
+ radial-gradient(circle at 20% 30%,rgba(52,130,88,.65),transparent 30%),
+ radial-gradient(circle at 75% 65%,rgba(38,104,73,.65),transparent 35%),
+ linear-gradient(145deg,#173e2d,#092118 62%,#061712);
+ box-shadow:inset 0 0 70px rgba(0,0,0,.25)
+}
+.map:after{
+ content:"";position:absolute;inset:0;opacity:.25;
+ background:radial-gradient(ellipse at 50% 45%,transparent 0 38%,rgba(0,0,0,.3) 75%),linear-gradient(45deg,transparent 48%,#a2d8ac33 49%,transparent 50%);
+ background-size:auto,110px 90px
+}
+.pin{z-index:2;background:rgba(7,29,22,.83);border-color:rgba(86,222,144,.35);backdrop-filter:blur(8px)}
+.camera-grid{gap:12px}.cam{
+ height:137px;border:1px solid var(--line);box-shadow:inset 0 -70px 60px rgba(0,0,0,.22);
+ background:
+ linear-gradient(135deg,rgba(36,87,61,.8),rgba(9,29,22,.8)),
+ repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 8px)
+}
+.live{background:rgba(23,142,84,.85);box-shadow:0 4px 14px rgba(28,218,121,.18)}
+.ring{box-shadow:0 0 0 1px rgba(82,221,143,.12),0 10px 25px rgba(0,0,0,.18)}
+.table th{letter-spacing:.8px}.table td{padding:13px 10px}.table tr:hover td{background:rgba(52,139,95,.045)}
+.pill{font-weight:700;letter-spacing:.2px}.online{background:rgba(28,155,91,.14);border:1px solid rgba(60,220,137,.13)}
+.warning{background:rgba(207,151,35,.13);border:1px solid rgba(231,183,91,.15)}
+.offline{background:rgba(216,67,67,.12);border:1px solid rgba(255,90,90,.15)}
+.input{
+ background:rgba(7,25,20,.72);border-color:var(--line2);color:#e8f6ef;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.025)
+}
+.module-head h2{font-size:22px;letter-spacing:-.4px}
+.footer{color:#54756a;margin-top:24px}
+.side-bottom{border-color:var(--line)}.avatar{box-shadow:0 0 0 4px rgba(231,183,78,.08)}
+hr{border-color:var(--line)!important}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.main{padding:16px}.top{flex-wrap:wrap}.actions{width:100%}.search{flex:1;min-width:120px}.hero h2{font-size:25px}}
+</style>
+
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">⛰</div><div><b>GUNUNG PANCAR</b><small>Camping Ground</small></div></div>
+  <div class="nav-title">MENU UTAMA</div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard"><span class="ico">⌂</span>Dashboard</button>
+    <button data-page="manajemen"><span class="ico">▣</span>Manajemen</button>
+    <button data-page="master"><span class="ico">◫</span>Master Data</button>
+    <button data-page="keuangan"><span class="ico">◉</span>Keuangan</button>
+    <button data-page="kasir"><span class="ico">▤</span>System Kasir</button>
+    <button data-page="sewa"><span class="ico">⛺</span>Penyewaan Alat</button>
+    <button data-page="inventaris"><span class="ico">▦</span>Inventaris Barang</button>
+    <button data-page="hr"><span class="ico">♙</span>HR & Absen</button>
+    <button data-page="network"><span class="ico">⌁</span>Jaringan & CCTV</button>
+  </nav>
+  <div class="nav-title">SISTEM</div>
+  <nav class="nav"><button data-page="laporan"><span class="ico">▤</span>Laporan</button><button data-page="pengaturan"><span class="ico">⚙</span>Pengaturan</button></nav>
+  <div class="side-bottom"><div class="user"><div class="avatar">A</div><div><b>Admin Camp</b><small style="display:block">Superuser</small></div></div></div>
+</aside>
+
+<main class="main">
+<header class="top"><div class="title"><h1 id="pageTitle">Dashboard</h1><p id="pageSub">Ringkasan operasional Gunung Pancar Camping Ground</p></div><div class="actions"><input class="search" placeholder="⌕  Cari data..." id="globalSearch"><button class="btn">🔔 <span style="color:#ff7774">3</span></button><button class="btn primary">☁ Sinkronisasi</button></div></header>
+
+<section id="dashboard" class="page active">
+  <div class="hero"><span class="badge">● LIVE · SISTEM OPERASIONAL</span><h2>Selamat datang, Admin Camp 👋</h2><p>Monitor reservasi, kasir, penyewaan, inventaris, SDM, keuangan, jaringan dan CCTV dari satu dashboard terpadu.</p></div>
+  <div class="cards">
+    <div class="card stat"><div><div class="label">Pengunjung Aktif</div><div class="num">86</div><div class="trend">↑ 12% hari ini</div></div><div class="stat-icon">🏕</div></div>
+    <div class="card stat"><div><div class="label">Reservasi Hari Ini</div><div class="num">24</div><div class="trend">18 sudah check-in</div></div><div class="stat-icon">📅</div></div>
+    <div class="card stat"><div><div class="label">Pendapatan Hari Ini</div><div class="num">Rp 8,4 jt</div><div class="trend">↑ 8,6% vs kemarin</div></div><div class="stat-icon">💰</div></div>
+    <div class="card stat"><div><div class="label">Alat Disewa</div><div class="num">37</div><div class="trend">6 siap disewa</div></div><div class="stat-icon">⛺</div></div>
+    <div class="card stat"><div><div class="label">CCTV Online</div><div class="num">19/24</div><div class="trend">3 warning · 2 offline</div></div><div class="stat-icon">📹</div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><div class="panel-head"><h3>Pendapatan 7 Hari</h3><span class="muted">Rp juta</span></div><div class="chart">
+      <div class="bar" style="height:48%"><em>6.2</em><span>Rab</span></div><div class="bar" style="height:61%"><em>7.8</em><span>Kam</span></div><div class="bar" style="height:53%"><em>6.9</em><span>Jum</span></div><div class="bar" style="height:76%"><em>9.7</em><span>Sab</span></div><div class="bar" style="height:88%"><em>11.2</em><span>Min</span></div><div class="bar" style="height:68%"><em>8.8</em><span>Sen</span></div><div class="bar" style="height:65%"><em>8.4</em><span>Sel</span></div>
+    </div></div>
+    <div class="panel"><div class="panel-head"><h3>Aktivitas Terbaru</h3><span class="muted">Lihat semua ›</span></div>
+      <div class="activity"><span class="dot"></span><div><b>Check-in berhasil</b><p>Booking GP-2408 · Area Camping A · 10 menit lalu</p></div></div>
+      <div class="activity"><span class="dot"></span><div><b>Penyewaan alat</b><p>2 tenda + 4 matras · Kasir Utama · 18 menit lalu</p></div></div>
+      <div class="activity"><span class="dot"></span><div><b>Pembayaran diterima</b><p>Rp 1.250.000 · QRIS · 26 menit lalu</p></div></div>
+      <div class="activity"><span class="dot" style="background:#e7b75b"></span><div><b>CCTV warning</b><p>AP Glamping B · latency 180 ms · 32 menit lalu</p></div></div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:15px">
+    <div class="panel"><div class="panel-head"><h3>Okupansi Area</h3><span class="muted">Hari ini</span></div><div class="ringrow"><div><div class="ring"><b>78%</b></div><small>Camping</small></div><div><div class="ring" style="background:conic-gradient(#e7b75b 0 62%,#193a31 62%)"><b>62%</b></div><small>Glamping</small></div><div><div class="ring" style="background:conic-gradient(#56b9e8 0 41%,#193a31 41%)"><b>41%</b></div><small>Event</small></div></div></div>
+    <div class="panel"><div class="panel-head"><h3>Cuaca</h3><span class="muted">Update 10:45 WIB</span></div><div style="font-size:38px">🌥️ <b>22°C</b></div><p class="muted">Kabut tipis · Kelembapan 81% · Angin 8 km/jam</p></div>
+    <div class="panel"><div class="panel-head"><h3>Notifikasi Penting</h3><span class="pill warning">3 aktif</span></div><p class="muted">• 2 perangkat CCTV offline<br>• Stok matras hampir minimum<br>• 1 invoice jatuh tempo</p></div>
+  </div>
+</section>
+
+<section id="manajemen" class="page"><div class="module-head"><h2>Manajemen Operasional</h2><div class="toolbar"><button class="btn">Filter</button><button class="btn primary">＋ Tambah Reservasi</button></div></div><div class="kpi"><div class="card"><span class="muted">Booking aktif</span><div class="num">42</div></div><div class="card"><span class="muted">Check-in</span><div class="num">18</div></div><div class="card"><span class="muted">Check-out</span><div class="num">11</div></div><div class="card"><span class="muted">Occupancy</span><div class="num">72%</div></div></div><div class="panel" style="margin-top:15px"><div class="panel-head"><h3>Reservasi Terbaru</h3><input class="input" placeholder="Cari booking..."></div><table class="table"><tr><th>Kode</th><th>Tamu</th><th>Area</th><th>Tanggal</th><th>Status</th><th>Total</th></tr><tr><td>GP-2408</td><td>Andi Pratama</td><td>Camping A</td><td>12–13 Ags</td><td><span class="pill online">Check-in</span></td><td>Rp 850.000</td></tr><tr><td>GP-2409</td><td>Sinta Family</td><td>Glamping</td><td>12–14 Ags</td><td><span class="pill warning">Booking</span></td><td>Rp 2.400.000</td></tr><tr><td>GP-2410</td><td>PT Nusantara</td><td>Event Area</td><td>15 Ags</td><td><span class="pill online">Confirmed</span></td><td>Rp 5.750.000</td></tr></table></div></section>
+
+<section id="master" class="page"><div class="module-head"><h2>Master Data</h2><button class="btn primary">＋ Tambah Data</button></div><div class="grid3"><div class="card"><b>Data Area</b><p class="muted">12 area camping · 6 glamping · 2 event</p></div><div class="card"><b>Data Paket</b><p class="muted">18 paket reservasi aktif</p></div><div class="card"><b>Data Tarif</b><p class="muted">32 tarif & seasonal pricing</p></div></div><div class="panel" style="margin-top:15px"><table class="table"><tr><th>Master</th><th>Jumlah</th><th>Terakhir Update</th><th>Status</th></tr><tr><td>Area / Lokasi</td><td>20</td><td>12 Ags 2026</td><td><span class="pill online">Aktif</span></td></tr><tr><td>Paket Camping</td><td>18</td><td>10 Ags 2026</td><td><span class="pill online">Aktif</span></td></tr><tr><td>Customer</td><td>1.284</td><td>Hari ini</td><td><span class="pill online">Aktif</span></td></tr></table></div></section>
+
+<section id="keuangan" class="page"><div class="module-head"><h2>Keuangan</h2><div class="toolbar"><button class="btn">Export Excel</button><button class="btn primary">＋ Transaksi</button></div></div><div class="cards"><div class="card"><span class="muted">Pendapatan</span><div class="num">Rp 68,4 jt</div><div class="trend">Bulan berjalan</div></div><div class="card"><span class="muted">Pengeluaran</span><div class="num">Rp 31,7 jt</div></div><div class="card"><span class="muted">Laba Operasional</span><div class="num">Rp 36,7 jt</div></div><div class="card"><span class="muted">Piutang</span><div class="num">Rp 4,2 jt</div></div><div class="card"><span class="muted">Saldo Kas/Bank</span><div class="num">Rp 92,1 jt</div></div></div><div class="grid2"><div class="panel"><h3>Arus Kas</h3><div class="chart"><div class="bar" style="height:40%"><em>4.2</em></div><div class="bar" style="height:65%"><em>7.1</em></div><div class="bar" style="height:52%"><em>5.8</em></div><div class="bar" style="height:82%"><em>9.3</em></div><div class="bar" style="height:72%"><em>8.2</em></div><div class="bar" style="height:90%"><em>10.5</em></div></div></div><div class="panel"><h3>Transaksi Terakhir</h3><div class="activity"><span class="dot"></span><div><b>Pendapatan Camping</b><p>Rp 1.850.000 · QRIS</p></div></div><div class="activity"><span class="dot" style="background:#e7b75b"></span><div><b>Pembelian logistik</b><p>Rp 720.000 · Kas</p></div></div></div></div></section>
+
+<section id="kasir" class="page"><div class="module-head"><h2>System Kasir</h2><div><span class="pill online">Kasir 01 Online</span></div></div><div class="grid2"><div class="panel"><h3>Transaksi Baru</h3><div class="form" style="grid-template-columns:1fr 1fr;margin-top:15px"><input class="input" placeholder="Cari produk / paket"><input class="input" placeholder="Customer"></div><table class="table"><tr><th>Item</th><th>Qty</th><th>Harga</th><th>Total</th></tr><tr><td>Paket Camping A</td><td>1</td><td>Rp 350.000</td><td>Rp 350.000</td></tr><tr><td>Sewa Tenda 4P</td><td>1</td><td>Rp 150.000</td><td>Rp 150.000</td></tr></table><div style="text-align:right;margin-top:15px"><b style="font-size:22px">Rp 500.000</b><br><button class="btn primary" style="margin-top:10px">Bayar Sekarang</button></div></div><div class="panel"><h3>Metode Pembayaran</h3><div class="grid3" style="margin-top:15px"><button class="btn">💵 Cash</button><button class="btn">▣ QRIS</button><button class="btn">💳 EDC</button></div><hr style="border-color:#19382f;margin:20px 0"><p class="muted">Shift hari ini</p><h2>Rp 8.420.000</h2><p class="muted">126 transaksi · 3 void · 0 selisih</p></div></div></section>
+
+<section id="sewa" class="page"><div class="module-head"><h2>Penyewaan Alat Camping</h2><button class="btn primary">＋ Rental Baru</button></div><div class="cards"><div class="card"><span class="muted">Total Unit</span><div class="num">148</div></div><div class="card"><span class="muted">Sedang Disewa</span><div class="num">37</div></div><div class="card"><span class="muted">Tersedia</span><div class="num">96</div></div><div class="card"><span class="muted">Maintenance</span><div class="num">15</div></div><div class="card"><span class="muted">Pendapatan</span><div class="num">Rp 12,8 jt</div></div></div><div class="panel"><table class="table"><tr><th>Kode</th><th>Alat</th><th>Total</th><th>Disewa</th><th>Tersedia</th><th>Status</th></tr><tr><td>TND-04</td><td>Tenda 4P</td><td>35</td><td>12</td><td>23</td><td><span class="pill online">Ready</span></td></tr><tr><td>MTR-01</td><td>Matras</td><td>60</td><td>18</td><td>42</td><td><span class="pill online">Ready</span></td></tr><tr><td>KRS-02</td><td>Kursi Lipat</td><td>40</td><td>7</td><td>33</td><td><span class="pill online">Ready</span></td></tr></table></div></section>
+
+<section id="inventaris" class="page"><div class="module-head"><h2>Inventaris Barang</h2><button class="btn primary">＋ Barang Masuk</button></div><div class="panel"><div class="form"><input class="input" placeholder="Cari barang"><select class="input"><option>Semua kategori</option><option>Logistik</option><option>Elektronik</option><option>Operasional</option></select><select class="input"><option>Semua status</option><option>Baik</option><option>Perlu Perbaikan</option></select></div><table class="table"><tr><th>Kode</th><th>Barang</th><th>Kategori</th><th>Stok</th><th>Minimum</th><th>Kondisi</th></tr><tr><td>INV-001</td><td>Matras Camping</td><td>Camping</td><td>42</td><td>20</td><td><span class="pill online">Baik</span></td></tr><tr><td>INV-014</td><td>Gas Portable</td><td>Logistik</td><td>8</td><td>10</td><td><span class="pill warning">Restock</span></td></tr><tr><td>INV-021</td><td>Router Outdoor</td><td>IT</td><td>7</td><td>3</td><td><span class="pill online">Baik</span></td></tr></table></div></section>
+
+<section id="hr" class="page"><div class="module-head"><h2>HR & Absen</h2><button class="btn primary">＋ Karyawan</button></div><div class="kpi"><div class="card"><span class="muted">Karyawan</span><div class="num">28</div></div><div class="card"><span class="muted">Hadir</span><div class="num">25</div></div><div class="card"><span class="muted">Izin/Cuti</span><div class="num">2</div></div><div class="card"><span class="muted">Alpha</span><div class="num">1</div></div></div><div class="panel" style="margin-top:15px"><table class="table"><tr><th>Nama</th><th>Jabatan</th><th>Shift</th><th>Jam Masuk</th><th>Status</th></tr><tr><td>Rizky Maulana</td><td>Supervisor</td><td>Pagi</td><td>07:48</td><td><span class="pill online">Hadir</span></td></tr><tr><td>Dewi Lestari</td><td>Front Office</td><td>Pagi</td><td>07:56</td><td><span class="pill online">Hadir</span></td></tr><tr><td>Fajar Hadi</td><td>Teknisi</td><td>Siang</td><td>13:02</td><td><span class="pill online">Hadir</span></td></tr></table></div></section>
+
+<section id="network" class="page"><div class="module-head"><h2>Jaringan & CCTV</h2><div class="toolbar"><button class="btn">Peta Area</button><button class="btn primary">⟳ Sinkronisasi</button></div></div><div class="cards"><div class="card"><span class="muted">Total Perangkat</span><div class="num">24</div></div><div class="card"><span class="muted">Online</span><div class="num">19</div></div><div class="card"><span class="muted">Warning</span><div class="num" style="color:#e7b75b">3</div></div><div class="card"><span class="muted">Offline</span><div class="num" style="color:#ff6b68">2</div></div><div class="card"><span class="muted">NVR Storage</span><div class="num">52%</div></div></div><div class="grid2"><div class="panel"><div class="panel-head"><h3>Peta Monitoring Gunung Pancar</h3><span class="pill online">Live</span></div><div class="map"><div class="pin" style="left:18%;top:22%">📹 Camping A <i>●</i></div><div class="pin" style="left:69%;top:19%">📹 Glamping <i>●</i></div><div class="pin" style="left:78%;top:61%">📹 Parking <i>●</i></div><div class="pin" style="left:42%;top:69%">📡 AP Outdoor <i>●</i></div><div class="pin" style="left:8%;top:68%">📹 Entrance <i>!</i></div><div class="pin" style="left:47%;top:37%">🗄 NVR Core <i>●</i></div></div></div><div class="panel"><div class="panel-head"><h3>Live CCTV</h3><span class="muted">19 online</span></div><div class="camera-grid"><div class="cam"><span class="live">● LIVE</span><b>Camping A</b></div><div class="cam"><span class="live">● LIVE</span><b>Glamping</b></div><div class="cam"><span class="live">● LIVE</span><b>Parking</b></div><div class="cam"><span class="live" style="background:#754e16">WARNING</span><b>Entrance</b></div></div><div style="margin-top:16px"><p class="muted">Perangkat jaringan</p><div class="activity"><span class="dot"></span><div><b>Router Utama · 192.168.1.1</b><p>Online · latency 8 ms</p></div></div><div class="activity"><span class="dot" style="background:#e7b75b"></span><div><b>AP Glamping B · 192.168.1.11</b><p>Warning · latency 180 ms</p></div></div></div></div></div></section>
+
+<section id="laporan" class="page"><div class="module-head"><h2>Laporan</h2><div class="toolbar"><button class="btn">PDF</button><button class="btn primary">Excel</button></div></div><div class="grid3"><div class="card"><b>Laporan Pendapatan</b><p class="muted">Harian, mingguan, bulanan</p></div><div class="card"><b>Laporan Reservasi</b><p class="muted">Occupancy & channel booking</p></div><div class="card"><b>Laporan Inventaris</b><p class="muted">Stok, mutasi, kondisi</p></div><div class="card"><b>Laporan Kasir</b><p class="muted">Shift & pembayaran</p></div><div class="card"><b>Laporan HR</b><p class="muted">Absensi & payroll</p></div><div class="card"><b>Laporan CCTV</b><p class="muted">Health & downtime perangkat</p></div></div></section>
+
+<section id="pengaturan" class="page"><div class="module-head"><h2>Pengaturan Sistem</h2><button class="btn primary">Simpan Perubahan</button></div><div class="panel"><div class="form"><label>Nama Usaha<input class="input" value="Gunung Pancar Camping Ground"></label><label>Zona Waktu<input class="input" value="Asia/Jakarta"></label><label>Format Mata Uang<input class="input" value="IDR (Rp)"></label></div><div class="activity"><span class="dot"></span><div><b>Backup otomatis</b><p>Aktif · setiap hari pukul 02:00 WIB</p></div></div><div class="activity"><span class="dot"></span><div><b>Notifikasi CCTV</b><p>Aktif · Telegram / WhatsApp / Email</p></div></div></div></section>
+
+<div class="footer">Demo UI/UX — Gunung Pancar Camping Ground Management System · Data di halaman ini adalah data contoh.</div>
+</main></div>
+<script>
+const titles={
+dashboard:["Dashboard","Ringkasan operasional Gunung Pancar Camping Ground"],
+manajemen:["Manajemen","Reservasi, check-in, check-out dan operasional area"],
+master:["Master Data","Kelola area, paket, tarif, customer dan data referensi"],
+keuangan:["Keuangan","Pendapatan, pengeluaran, kas/bank dan piutang"],
+kasir:["System Kasir","Point of Sale untuk tiket, paket dan transaksi camping"],
+sewa:["Penyewaan Alat","Rental tenda, matras, kursi dan perlengkapan camping"],
+inventaris:["Inventaris Barang","Stok, kondisi, mutasi dan pengadaan barang"],
+hr:["HR & Absen","Karyawan, shift, absensi dan monitoring kehadiran"],
+network:["Jaringan & CCTV","Monitoring perangkat jaringan, AP, NVR dan kamera"],
+laporan:["Laporan","Pusat laporan operasional, keuangan dan sistem"],
+pengaturan:["Pengaturan","Konfigurasi aplikasi dan integrasi"]
+};
+document.querySelectorAll(".nav button[data-page]").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  const id=btn.dataset.page;
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("pageTitle").textContent=titles[id][0];
+  document.getElementById("pageSub").textContent=titles[id][1];
+  window.scrollTo({top:0,behavior:"smooth"});
+ });
+});
+document.getElementById("globalSearch").addEventListener("input",e=>{
+ const q=e.target.value.toLowerCase().trim();
+ const page=document.querySelector(".page.active");
+ const rows=page.querySelectorAll("tbody tr, .activity, .card");
+ if(!q){rows.forEach(r=>r.style.opacity="1");return;}
+ rows.forEach(r=>r.style.opacity=r.textContent.toLowerCase().includes(q)?"1":"0.35");
+});
+</script>
+</body></html>
